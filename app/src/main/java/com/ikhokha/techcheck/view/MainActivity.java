@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
-import com.ikhokha.techcheck.R;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
