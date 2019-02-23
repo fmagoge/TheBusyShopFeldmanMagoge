@@ -14,13 +14,19 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 import com.ikhokha.techcheck.R;
 import com.ikhokha.techcheck.model.Item;
 import com.ikhokha.techcheck.view.MainActivity;
 
 import java.io.ByteArrayOutputStream;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
 
@@ -28,6 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context context;
     private ArrayList<HashMap<String, Item>> dataMapArrayList;
     private HashMap<String, Item> resultMap = new HashMap<>();
+    private List<String> resultMapKeys = new ArrayList<>();
     public OnItemClickListener onItemClickListener;
     ImageView androidIMGGlobal;
 
@@ -69,6 +76,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.context = context;
 
         imageLoader = CustomVolleyRequestQueue.getInstance(context).getImageLoader();
+
+
     }
 
     @Override
@@ -80,19 +89,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-
         resultMap = dataMapArrayList.get(position);
 
-        Log.d("##########","#####################  "+resultMap.size());
+        //Get keys from HashMap
+        for (String str: resultMap.keySet()){
+            resultMapKeys.add(str);
+        }
+
+        Object getRowOnItem = resultMap.get(resultMapKeys.get(position));
+
+        LinkedTreeMap<Object,Object> t = (LinkedTreeMap) getRowOnItem;
+        String description = t.get("description").toString();
+        String price = t.get("price").toString();
+        String image = t.get("image").toString();
+
+        resultMap.get(resultMapKeys.get(position));
 
         if (resultMap != null) {
-            /*holder.descriptionText.setText(resultMap.get("description").toString());
-            holder.priceText.setText(String.valueOf(resultMap.get("price").getPrice()));
+                holder.descriptionText.setText(description);
 
-            imageLoader.get("gs://the-busy-shop.appspot.com/" + resultMap.get("image").getImage(), ImageLoader.getImageListener(holder.imageView, R.mipmap.loading, R.mipmap.ic_launcher));
-            holder.imageView.setImageUrl("gs://the-busy-shop.appspot.com/" + resultMap.get(position).getImage(), imageLoader);
+                DecimalFormat df2 = new DecimalFormat(".##");
+                Double priceD = Double.parseDouble(price);
+                df2.setRoundingMode(RoundingMode.UP);
+                holder.priceText.setText(df2.format(priceD));
 
-            androidIMGGlobal = holder.imageView;*/
+                imageLoader.get("gs://the-busy-shop.appspot.com/" + image, ImageLoader.getImageListener(holder.imageView, R.mipmap.loading, R.mipmap.ic_launcher));
+                holder.imageView.setImageUrl("gs://the-busy-shop.appspot.com/" + image, imageLoader);
+
+                androidIMGGlobal = holder.imageView;
         }
     }
 
@@ -100,5 +124,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return dataMapArrayList.size();
     }
+
+   
 
 }

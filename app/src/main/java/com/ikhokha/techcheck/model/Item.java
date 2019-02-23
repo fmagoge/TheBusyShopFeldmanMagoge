@@ -16,6 +16,15 @@ public class Item {
     @Expose
     private Double price;
 
+    public Item() {
+    }
+
+    public Item(String description, String image, Double price) {
+        this.description = description;
+        this.image = image;
+        this.price = price;
+    }
+
     public String getDescription() {
         return description;
     }
