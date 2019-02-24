@@ -23,7 +23,6 @@ import com.ikhokha.techcheck.presenter.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
@@ -35,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     public static FragmentManager fragmentManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -47,7 +46,7 @@ public class HomeActivity extends AppCompatActivity {
         startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, MainActivity.class));
+                startActivity(new Intent(HomeActivity.this, ScanningActivity.class));
             }
         });
 
@@ -76,8 +75,9 @@ public class HomeActivity extends AppCompatActivity {
                 recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-                        Toast.makeText(HomeActivity.this, "Add to Cart", Toast.LENGTH_SHORT ).show();
                         recyclerViewAdapter.callBack(position);
+                        callCartFragmentFragment(savedInstanceState);
+
                     }
                 });
 
@@ -98,8 +98,8 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        CartFragment signupFragment = new CartFragment();
-        fragmentTransaction.add(R.id.cartFrameLayout, signupFragment, null);
+        CartFragment cartFragment = new CartFragment();
+        fragmentTransaction.add(R.id.cartFrameLayout, cartFragment, null);
         fragmentTransaction.commit();
     }
 

@@ -18,24 +18,31 @@
 
             <!--Column 1-->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
             </LinearLayout>
 
             <!--Column 2-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <!--Column 3-->
             <RelativeLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/shopping_cart_items"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:text="0"/>
+                    android:textStyle="bold"/>
                 <ImageView
                     android:id="@+id/shopping_cart"
                     android:layout_width="wrap_content"
