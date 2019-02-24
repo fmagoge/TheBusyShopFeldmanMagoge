@@ -125,6 +125,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return dataMapArrayList.size();
     }
 
+    public void callBack(int position){
+        resultMap = dataMapArrayList.get(position);
+
+
+    }
    
 
 }

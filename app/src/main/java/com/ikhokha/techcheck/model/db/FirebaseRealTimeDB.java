@@ -1,4 +1,4 @@
-package com.ikhokha.techcheck.model;
+package com.ikhokha.techcheck.model.db;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
