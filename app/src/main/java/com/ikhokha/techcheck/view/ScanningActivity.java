@@ -114,7 +114,13 @@ public class ScanningActivity extends AppCompatActivity implements ZXingScannerV
     @Override
     public void handleResult(Result result) {
         final String scanResult = result.getText();
-        AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+
+        Intent intent = new Intent();
+        intent.putExtra("barcode", scanResult);
+        setResult(Activity.RESULT_OK,intent);
+        finish();
+
+        /*AlertDialog.Builder builder =  new AlertDialog.Builder(this);
         builder.setTitle("Scan Title");
         builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener(){
             @Override
@@ -133,6 +139,6 @@ public class ScanningActivity extends AppCompatActivity implements ZXingScannerV
         });
         builder.setMessage(scanResult);
         AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        alertDialog.show();*/
     }
 }

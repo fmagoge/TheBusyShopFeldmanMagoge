@@ -26,6 +26,7 @@ import com.ikhokha.techcheck.model.util.Constants;
 import com.ikhokha.techcheck.presenter.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,10 @@ public class HomeActivity extends AppCompatActivity {
     public static FragmentManager fragmentManager;
     public static final int REQUEST_CODE = 1;
     private static List<String> mapKeys;
-    HashMap<String,Item> hashMap;
+    HashMap<String,Item> hashMap,hashMapForScan = new HashMap<>();
     Bundle savedInstanceStateExt;
+
+    private CartFragment cartFragment;
 
 
     @Override
@@ -57,7 +60,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this, ScanningActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
-
             }
         });
 
@@ -74,14 +76,13 @@ public class HomeActivity extends AppCompatActivity {
 
                 mapKeys = new ArrayList<>();
 
-
                 for (Map.Entry<String, Item> entry: map.entrySet()){
                     hashMap = new HashMap<>();
                     hashMap.put(entry.getKey(),entry.getValue());
+                    hashMapForScan.putAll(hashMap);
                     mapKeys.add(entry.getKey());
                     hashMapList.add(hashMap);
                 }
-
 
                 recyclerViewAdapter = new RecyclerViewAdapter(hashMapList,HomeActivity.this);
                 recyclerView.setLayoutManager(layoutManager);
@@ -91,8 +92,11 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(int position) {
                         recyclerViewAdapter.callBack(position);
-                        callCartFragmentFragment(savedInstanceState);
-
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .detach(cartFragment)
+                                .attach(cartFragment)
+                                .commit();
                     }
                 });
 
@@ -105,6 +109,8 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         callCartFragmentFragment(savedInstanceState);
+
+
     }
 
     private void callCartFragmentFragment(Bundle savedInstanceState){
@@ -113,7 +119,7 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        CartFragment cartFragment = new CartFragment();
+        cartFragment = new CartFragment();
         fragmentTransaction.add(R.id.cartFrameLayout, cartFragment, null);
         fragmentTransaction.commit();
     }
@@ -125,27 +131,36 @@ public class HomeActivity extends AppCompatActivity {
 
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("barcode");
-                // do something with the result
 
                 for (String barcode: mapKeys){
                     if (result.equals(barcode)){
-                        Object getRowOnItem = hashMap.get(result);
+                        Object getRowOnItem = hashMapForScan.get(result);
 
-                        //TODO: Find out why error is happening
-                        /*LinkedTreeMap<Object,Object> t = (LinkedTreeMap) getRowOnItem;
+                        LinkedTreeMap<Object,Object> t = (LinkedTreeMap) getRowOnItem;
                         String description = t.get("description").toString();
                         String price = t.get("price").toString();
 
                         CartItem cartItem = new CartItem();
-                        cartItem.setPrice(Double.parseDouble(price));
+                        cartItem.setPrice(Double.parseDouble(String.valueOf(price)));
                         cartItem.setDescription(description);
                         Constants.constantList.add(cartItem);
-                        callCartFragmentFragment(savedInstanceStateExt);*/
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .detach(cartFragment)
+                                .commitNowAllowingStateLoss();
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .attach(cartFragment)
+                                .commitAllowingStateLoss();
+                    }else {
+
                     }
                 }
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                // some stuff that will happen if there's no result
+
             }
         }
     }

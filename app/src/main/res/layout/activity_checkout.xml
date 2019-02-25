@@ -76,37 +76,23 @@ android:fillViewport="true">
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/whatsappImgBtn"
-            android:layout_width="59dp"
-            android:layout_height="59dp"
+        <Button
+            android:id="@+id/shareBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="56dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/googleImgBtn"
-            app:layout_constraintHorizontal_bias="0.748"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/totalLabel"
-            app:layout_constraintVertical_bias="0.952"
-            app:srcCompat="@mipmap/whatsapp_icon" />
-
-        <ImageButton
-            android:id="@+id/googleImgBtn"
-            android:layout_width="58dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="8dp"
+            android:text="SHARE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.814"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/totalTextView"
-            app:layout_constraintVertical_bias="0.609"
-            app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+            app:layout_constraintVertical_bias="0.529" />
 
     </android.support.constraint.ConstraintLayout>
 </RelativeLayout>

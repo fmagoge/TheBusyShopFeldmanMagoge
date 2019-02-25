@@ -1,6 +1,5 @@
 package com.ikhokha.techcheck.view;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -8,25 +7,19 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ikhokha.techcheck.R;
 import com.ikhokha.techcheck.model.CartItem;
 import com.ikhokha.techcheck.model.util.Constants;
-import com.ikhokha.techcheck.model.util.ScreenShot;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,9 +30,9 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private TextView dateTimeTextView;
     private TextView totalTextView;
-    private ImageButton whatsappShare;
-    private ImageButton googleShare;
+    private Button shareButtn;
     private Double total = 0.00;
+    String imageFilePath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,33 +49,24 @@ public class CheckoutActivity extends AppCompatActivity {
     private void initWidgets(){
         dateTimeTextView = findViewById(R.id.dateTimeTextView);
         totalTextView = findViewById(R.id.totalTextView);
-        whatsappShare = findViewById(R.id.whatsappImgBtn);
-        googleShare = findViewById(R.id.googleImgBtn);
+        shareButtn = findViewById(R.id.shareBtn);
 
         DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
         String dateTime = df.format(Calendar.getInstance().getTime());
 
         dateTimeTextView.setText(dateTime);
 
-        whatsappShare.setOnClickListener(new View.OnClickListener() {
+        shareButtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Figure out saving screenshot directly
-                storeImage(ScreenShot.takeScreenShotOfRootView(v));
 
-                /*Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                Uri screenshotUri = Uri.parse();
+                takeScreenshot();
 
-                sharingIntent.setType("image/png");
-                sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-                startActivity(Intent.createChooser(sharingIntent, "Share image using"));*/
-
-            }
-        });
-
-        googleShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/jpg");
+                final File photoFile = new File(imageFilePath);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(photoFile));
+                startActivity(Intent.createChooser(shareIntent, "Share image using"));
 
             }
         });
@@ -133,41 +117,41 @@ public class CheckoutActivity extends AppCompatActivity {
         return total;
     }
 
-    private void storeImage(Bitmap image) {
-        File pictureFile = getOutputMediaFile();
-        if (pictureFile == null) {
-            Log.d(this.getClass().getName(),
-                    "Error creating media file, check storage permissions: ");// e.getMessage());
-            return;
-        }
+    private void takeScreenshot() {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
         try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d(this.getClass().getName(), "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d(this.getClass().getName(), "Error accessing file: " + e.getMessage());
+            // image naming and path  to include sd card  appending name you choose for file
+            imageFilePath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(imageFilePath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
         }
     }
 
-
-    private  File getOutputMediaFile(){
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/data/"
-                + getApplicationContext().getPackageName()
-                + "/Files");
-
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                return null;
-            }
-        }
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
-        File mediaFile;
-        String mImageName="MI_"+ timeStamp +".jpg";
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
 }
