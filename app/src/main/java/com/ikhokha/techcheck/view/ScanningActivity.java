@@ -1,5 +1,6 @@
 package com.ikhokha.techcheck.view;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -115,17 +116,19 @@ public class ScanningActivity extends AppCompatActivity implements ZXingScannerV
         final String scanResult = result.getText();
         AlertDialog.Builder builder =  new AlertDialog.Builder(this);
         builder.setTitle("Scan Title");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 scannerView.resumeCameraPreview(ScanningActivity.this);
             }
         });
-        builder.setNeutralButton("Visit", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton("BARCODE found", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(scanResult));
-                startActivity(intent);
+                Intent intent = new Intent();
+                intent.putExtra("barcode", scanResult);
+                setResult(Activity.RESULT_OK,intent);
+                finish();
             }
         });
         builder.setMessage(scanResult);

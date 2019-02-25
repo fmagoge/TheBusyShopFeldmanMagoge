@@ -1,5 +1,6 @@
 package com.ikhokha.techcheck.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -33,10 +34,17 @@ public class CartFragment extends Fragment {
         }
         cartCoutTextView.setText(String.valueOf(numberOfListItems));
 
+        if (Constants.constantList.size()<1){
+            checkoutButton.setEnabled(false);
+        }else {
+            checkoutButton.setEnabled(true);
+        }
+
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "CHECKOUT ITEMS IN CART: "+Constants.constantList.size(),Toast.LENGTH_LONG).show();
+                startActivity(new Intent(getActivity(),CheckoutActivity.class));
             }
         });
 
