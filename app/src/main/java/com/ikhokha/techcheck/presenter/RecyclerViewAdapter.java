@@ -9,13 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.internal.LinkedTreeMap;
 import com.ikhokha.techcheck.R;
 import com.ikhokha.techcheck.model.CartItem;
 import com.ikhokha.techcheck.model.Item;
 import com.ikhokha.techcheck.model.util.Constants;
+
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -25,13 +28,11 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
 
-    private ImageLoader imageLoader;
     private Context context;
     private ArrayList<HashMap<String, Item>> dataMapArrayList;
     private HashMap<String, Item> resultMap = new HashMap<>();
     private List<String> resultMapKeys = new ArrayList<>();
-    public OnItemClickListener onItemClickListener;
-    ImageView androidIMGGlobal;
+    private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener{
         void onItemClick(int position);
@@ -44,7 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static  class RecyclerViewHolder extends RecyclerView.ViewHolder{
         public TextView descriptionText;
         public TextView priceText;
-        public final NetworkImageView imageView;
+        public final ImageView imageView;
 
         public RecyclerViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
@@ -69,10 +70,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewAdapter( ArrayList<HashMap<String, Item>> arraylist, Context context) {
         this.dataMapArrayList = arraylist;
         this.context = context;
-
-        imageLoader = CustomVolleyRequestQueue.getInstance(context).getImageLoader();
-
-
     }
 
     @Override
@@ -93,6 +90,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         Object getRowOnItem = resultMap.get(resultMapKeys.get(position));
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+
         LinkedTreeMap<Object,Object> t = (LinkedTreeMap) getRowOnItem;
         String description = t.get("description").toString();
         String price = t.get("price").toString();
@@ -108,10 +108,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 df2.setRoundingMode(RoundingMode.UP);
                 holder.priceText.setText(df2.format(priceD));
 
-                imageLoader.get("gs://the-busy-shop.appspot.com/" + image, ImageLoader.getImageListener(holder.imageView, R.mipmap.loading, R.mipmap.ic_launcher));
-                holder.imageView.setImageUrl("gs://the-busy-shop.appspot.com/" + image, imageLoader);
-
-                androidIMGGlobal = holder.imageView;
+                StorageReference storageReference = storage.getReferenceFromUrl("gs://the-busy-shop.appspot.com/"+image);
+                Glide.with(context)
+                    .load(storageReference)
+                    .into(holder.imageView);
         }
     }
 
@@ -135,8 +135,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         cartItem.setPrice(Double.parseDouble(price));
 
         Constants.constantList.add(cartItem);
-
-        Toast.makeText(context,"Cart items:: "+Constants.constantList.size(),Toast.LENGTH_LONG).show();
 
     }
    
